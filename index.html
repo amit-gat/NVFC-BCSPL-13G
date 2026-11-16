@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NVFC BCSPL 13G</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #0b1120; color: #f8fafc; margin: 0; }
+    .glass-card { background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(51, 65, 85, 0.75); }
+    .tab-active { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #fff; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35); }
+    .tab-inactive { background: rgba(30, 41, 59, 0.75); color: #94a3b8; }
+    .tab-inactive:hover { background: rgba(51, 65, 85, 0.75); color: #e2e8f0; }
+    .inline-drawer { animation: slideDown 0.16s ease-out; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="min-h-screen p-3 sm:p-4 md:p-6">
+  <div class="max-w-7xl mx-auto space-y-5">
+
+    <!-- Header -->
+    <header class="glass-card rounded-2xl p-4 sm:p-5 md:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-l-4 border-l-red-600">
+      <div>
+        <div class="flex flex-wrap items-center gap-2 mb-1.5">
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-red-500/20 text-red-300 border border-red-500/30">BCSPL Girls U14</span>
+          <span id="syncBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">10 Matches Loaded</span>
+        </div>
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white">NVFC BCSPL 13G</h1>
+      </div>
+
+      <div class="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 self-start sm:self-auto w-full sm:w-auto justify-between sm:justify-start">
+        <label for="venueFilter" class="text-xs font-semibold uppercase tracking-wider text-slate-400">Filter:</label>
+        <select id="venueFilter" onchange="renderAll()" class="bg-transparent text-sm font-semibold text-white focus:outline-none cursor-pointer">
+          <option value="ALL" class="bg-slate-900">All Matches</option>
+          <option value="Home" class="bg-slate-900">Home Matches Only</option>
+          <option value="Away" class="bg-slate-900">Away Matches Only</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- KPI Summary Row -->
+    <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3.5" id="kpiGrid"></section>
+
+    <!-- Navigation Tabs -->
+    <nav class="grid grid-cols-3 sm:flex sm:flex-wrap gap-2 border-b border-slate-800 pb-3">
+      <button onclick="switchTab('overview')" id="tabBtn-overview" class="tab-active px-2.5 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer text-center">1. Standings & Overview</button>
+      <button onclick="switchTab('leaderboard')" id="tabBtn-leaderboard" class="tab-inactive px-2.5 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer text-center">2. Starting XI & Players</button>
+      <button onclick="switchTab('gamelog')" id="tabBtn-gamelog" class="tab-inactive px-2.5 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer text-center">3. Match Log & Lineups</button>
+    </nav>
+
+    <!-- TAB 1: STANDINGS, TEAM OVERVIEW & STARTING LINEUP TRENDS -->
+    <section id="tab-overview" class="space-y-5">
+
+      <!-- TOP TABLE: BCSPL Girls U14 League Standings -->
+      <div class="glass-card rounded-2xl p-4 sm:p-5 overflow-x-auto">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-3">
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-white">BCSPL Girls U14 — League Standings</h3>
+            <p class="text-xs text-slate-400">From the BC Soccer Comet league table (updated weekly) • Last 5 form shown oldest to newest</p>
+          </div>
+          <div class="flex items-center gap-3 text-xs">
+            <span class="flex items-center gap-1 text-emerald-400 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Win</span>
+            <span class="flex items-center gap-1 text-amber-300 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span> Draw</span>
+            <span class="flex items-center gap-1 text-rose-400 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> Loss</span>
+          </div>
+        </div>
+        <table class="w-full text-left text-xs sm:text-sm">
+          <thead>
+            <tr class="text-[11px] uppercase text-slate-400 border-b border-slate-800">
+              <th class="py-2.5 pr-2 text-center w-8">#</th>
+              <th class="py-2.5 px-2">Team</th>
+              <th class="py-2.5 px-1.5 text-center">MP</th>
+              <th class="py-2.5 px-1.5 text-center">W</th>
+              <th class="py-2.5 px-1.5 text-center">D</th>
+              <th class="py-2.5 px-1.5 text-center">L</th>
+              <th class="py-2.5 px-1.5 text-center hidden sm:table-cell">GF</th>
+              <th class="py-2.5 px-1.5 text-center hidden sm:table-cell">GA</th>
+              <th class="py-2.5 px-1.5 text-center">GD</th>
+              <th class="py-2.5 px-2 text-center font-extrabold text-amber-300">PTS</th>
+              <th class="py-2.5 pl-2 text-right">Last 5</th>
+            </tr>
+          </thead>
+          <tbody id="standingsTableBody" class="divide-y divide-slate-800/60"></tbody>
+        </table>
+      </div>
+
+      <!-- GRAPH 1: Match-by-Match Goal Trend Sparkline -->
+      <div class="glass-card rounded-2xl p-4 sm:p-5">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-3">
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-white">Match-by-Match Goal Timeline (GF vs. GA)</h3>
+            <p class="text-xs text-slate-400">Tap any match bar to inspect full Starting XI, Substitutes & Goal Timeline • Top = NVFC BCSPL 13G GF • Bottom = Opp GA</p>
+          </div>
+          <div class="flex items-center gap-3 text-xs">
+            <span class="flex items-center gap-1 text-emerald-400 font-semibold"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span> Win</span>
+            <span class="flex items-center gap-1 text-amber-300 font-semibold"><span class="w-2.5 h-2.5 rounded-sm bg-amber-400 inline-block"></span> Draw</span>
+            <span class="flex items-center gap-1 text-rose-400 font-semibold"><span class="w-2.5 h-2.5 rounded-sm bg-rose-500 inline-block"></span> Loss</span>
+          </div>
+        </div>
+        <div id="timelineChartBox" class="overflow-x-auto pb-1"></div>
+      </div>
+
+      <!-- GRAPH 2: Starting Lineup Utilization & Top Scorers -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div class="glass-card rounded-2xl p-4 sm:p-5">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="text-sm sm:text-base font-bold text-white">Starting Lineup Utilization (Starts vs. Subs)</h3>
+            <div class="flex items-center gap-3 text-xs">
+              <span class="flex items-center gap-1 text-emerald-400 font-semibold"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span> Starts</span>
+              <span class="flex items-center gap-1 text-sky-400 font-semibold"><span class="w-2.5 h-2.5 rounded-sm bg-sky-400 inline-block"></span> Sub App</span>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">Number of times each player was named to the Starting XI vs. Substitutes bench</p>
+          <div id="startsChartBox" class="space-y-2 max-h-96 overflow-y-auto pr-1"></div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-4 sm:p-5">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="text-sm sm:text-base font-bold text-white">Top Goal Scorers (Starter vs. Sub Goals)</h3>
+            <div class="flex items-center gap-3 text-xs">
+              <span class="flex items-center gap-1 text-emerald-400 font-semibold"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span> Starter G</span>
+              <span class="flex items-center gap-1 text-amber-300 font-semibold"><span class="w-2.5 h-2.5 rounded-sm bg-amber-400 inline-block"></span> Sub G</span>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">Goals scored when starting in the XI vs. coming off the bench as a substitute</p>
+          <div id="scorersChartBox" class="space-y-2.5 pt-1"></div>
+        </div>
+      </div>
+
+      <!-- GRAPH 3 & 4: 20-Min Match Interval Scoring + Home vs Away Split -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div class="glass-card rounded-2xl p-4 sm:p-5">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="text-sm sm:text-base font-bold text-white">Scoring by Match Interval (80-Min BCSPL Girls U14 Format)</h3>
+            <div class="flex items-center gap-3 text-xs">
+              <span class="flex items-center gap-1 text-emerald-400 font-semibold"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span> NVFC GF</span>
+              <span class="flex items-center gap-1 text-rose-400 font-semibold"><span class="w-2.5 h-2.5 rounded-sm bg-rose-500 inline-block"></span> Opp GA</span>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">1st Half (1'–40+') vs. 2nd Half (41'–80+') broken into 20-minute windows</p>
+          <div id="intervalChartBox" class="space-y-3 pt-1"></div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-4 sm:p-5">
+          <h3 class="text-sm sm:text-base font-bold text-white mb-1">Home vs. Away Performance Split</h3>
+          <p class="text-xs text-slate-400 mb-3">Comparison of points, goals per match, and defensive record at Home vs. Away</p>
+          <div id="homeAwaySplitBox" class="space-y-3"></div>
+        </div>
+      </div>
+
+      <!-- Goalkeeper Rotation & Bench Impact Summary -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div class="glass-card rounded-2xl p-4 sm:p-5 lg:col-span-2">
+          <h3 class="text-sm sm:text-base font-bold text-white mb-1">Goalkeeper Starting Rotation</h3>
+          <p class="text-xs text-slate-400 mb-3">Starts in Goal (G), W-D-L Record, Clean Sheets (CS), and Goals Against Average (GAA)</p>
+          <div id="gkCardsBox" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-4">
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-white mb-1">Starter vs. Bench Goal Share</h3>
+            <p class="text-xs text-slate-400 mb-2.5">Contribution from Starting XI vs. Substitutes</p>
+            <div id="benchImpactBox"></div>
+          </div>
+          <div class="border-t border-slate-800 pt-3">
+            <h3 class="text-xs font-bold uppercase text-slate-400 mb-2">Substitute Goal Scorers (Off Bench)</h3>
+            <div id="superSubList" class="space-y-1.5 text-xs"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: STARTING XI & PLAYER LEADERBOARD -->
+    <section id="tab-leaderboard" class="hidden space-y-5">
+      <div class="glass-card rounded-2xl p-4 sm:p-5">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-white">Squad Starting Lineup & Scoring Leaderboard</h2>
+            <p class="text-xs text-slate-400">Tap any player to expand their match-by-match Starting XI, Substitute, and Goal log right below their row.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <select id="sortSelect" onchange="renderLeaderboard()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm font-semibold text-white focus:outline-none cursor-pointer">
+              <option value="starts">Sort by: Starting XI Count</option>
+              <option value="goals">Sort by: Total Goals</option>
+              <option value="gp">Sort by: Total Appearances (GP)</option>
+              <option value="startPct">Sort by: Start %</option>
+            </select>
+            <input id="playerSearch" type="text" oninput="renderLeaderboard()" placeholder="Search player or #..." class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-red-500 w-full sm:w-52" />
+          </div>
+        </div>
+
+        <!-- Phone-Optimized Stacked Player Cards (< md) -->
+        <div id="leaderboardMobileCards" class="md:hidden space-y-2.5"></div>
+
+        <!-- Desktop / Tablet Full Table (>= md) -->
+        <div class="hidden md:block overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="text-xs uppercase text-slate-400 border-b border-slate-800">
+                <th class="py-3 pr-2">#</th>
+                <th class="py-3 px-2">Player</th>
+                <th class="py-3 px-2 text-center">GP</th>
+                <th class="py-3 px-2 text-center text-emerald-400 font-extrabold">Starts (XI)</th>
+                <th class="py-3 px-2 text-center text-sky-400">Sub App</th>
+                <th class="py-3 px-2 w-36">Start %</th>
+                <th class="py-3 px-2 text-center text-amber-300 font-extrabold">Goals</th>
+                <th class="py-3 px-2 text-center text-emerald-300">Starter G</th>
+                <th class="py-3 px-2 text-center text-sky-300">Sub G</th>
+                <th class="py-3 px-2 text-center">G / GP</th>
+                <th class="py-3 pl-2">Role & Match Notes</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardBody" class="divide-y divide-slate-800/60"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: MATCH LOG & LINEUP BOX SCORES -->
+    <section id="tab-gamelog" class="hidden space-y-4">
+      <div class="glass-card rounded-2xl p-4 sm:p-5">
+        <h2 class="text-base sm:text-lg font-bold text-white mb-1">Chronological Match Log, Lineups & Timelines</h2>
+        <p class="text-xs text-slate-400 mb-4">Tap any match to expand its complete Starting XI (11), Substitutes, and Minute-by-Minute Goal/Card Timeline directly below that match.</p>
+
+        <!-- Phone-Optimized Stacked Match Cards (< md) -->
+        <div id="gameLogMobileCards" class="md:hidden space-y-2.5"></div>
+
+        <!-- Desktop / Tablet Full Table (>= md) -->
+        <div class="hidden md:block overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="text-xs uppercase text-slate-400 border-b border-slate-800">
+                <th class="py-2.5 pr-2">Date & Kickoff</th>
+                <th class="py-2.5 px-2">Match #</th>
+                <th class="py-2.5 px-2">Opponent</th>
+                <th class="py-2.5 px-2 text-center">H/A</th>
+                <th class="py-2.5 px-2 text-center">Score</th>
+                <th class="py-2.5 px-2 text-center">Result</th>
+                <th class="py-2.5 px-2">Starting GK</th>
+                <th class="py-2.5 pl-2">NVFC BCSPL 13G Goal Scorers</th>
+              </tr>
+            </thead>
+            <tbody id="gameLogBody" class="divide-y divide-slate-800/60"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // All match and standings data lives in this file. Each weekly update edits
+    // BASELINE_STANDINGS and BASELINE_MATCHES below; every table and chart is
+    // computed from them on load. (The old Google Sheet sync was removed.)
+
+    // BCSPL Girls U14 Standings Table (Updated through Nov 8, 2026)
+    const BASELINE_STANDINGS = [
+      { pos: 1,  team: 'NVFC BCSPL 13G',              isNVFC: true,  mp: 10, w: 8, d: 1, l: 1, gf: 33, ga: 10, gd: 23,  pts: 25, last5: ['W','W','W','W','W'] },
+      { pos: 2,  team: 'COQUITLAM METRO-FORD SC 13G', isNVFC: false, mp: 7,  w: 7, d: 0, l: 0, gf: 55, ga: 6,  gd: 49,  pts: 21, last5: ['W','W','W','W','W'] },
+      { pos: 3,  team: 'LANGLEY UNITED 13G',          isNVFC: false, mp: 8,  w: 6, d: 1, l: 1, gf: 28, ga: 5,  gd: 23,  pts: 19, last5: ['W','W','W','W','L'] },
+      { pos: 4,  team: 'COASTAL FC 13G',              isNVFC: false, mp: 8,  w: 6, d: 1, l: 1, gf: 27, ga: 11, gd: 16,  pts: 19, last5: ['W','W','W','W','L'] },
+      { pos: 5,  team: 'SURREY UNITED SC 13G',        isNVFC: false, mp: 7,  w: 5, d: 1, l: 1, gf: 32, ga: 10, gd: 22,  pts: 16, last5: ['W','W','W','W','W'] },
+      { pos: 6,  team: 'VAN U FC 13G',                isNVFC: false, mp: 7,  w: 4, d: 1, l: 2, gf: 26, ga: 13, gd: 13,  pts: 13, last5: ['W','L','W','W','D'] },
+      { pos: 7,  team: 'TSS ROVERS 13G',              isNVFC: false, mp: 7,  w: 4, d: 1, l: 2, gf: 25, ga: 16, gd: 9,   pts: 13, last5: ['L','W','W','W','L'] },
+      { pos: 8,  team: 'PACIFIC FC 13G',              isNVFC: false, mp: 8,  w: 3, d: 3, l: 2, gf: 23, ga: 17, gd: 6,   pts: 12, last5: ['D','D','L','W','L'] },
+      { pos: 9,  team: 'SURREY FC 13G',               isNVFC: false, mp: 7,  w: 3, d: 0, l: 4, gf: 13, ga: 15, gd: -2,  pts: 9,  last5: ['L','L','L','W','L'] },
+      { pos: 10, team: 'ABBOTSFORD SA 13G',           isNVFC: false, mp: 8,  w: 3, d: 0, l: 5, gf: 22, ga: 27, gd: -5,  pts: 9,  last5: ['W','L','L','L','W'] },
+      { pos: 11, team: 'BURNABY FC 13G',              isNVFC: false, mp: 6,  w: 2, d: 1, l: 3, gf: 9,  ga: 12, gd: -3,  pts: 7,  last5: ['D','L','L','L','W'] },
+      { pos: 12, team: 'NANAIMO UNITED FC 13G',       isNVFC: false, mp: 6,  w: 1, d: 2, l: 3, gf: 13, ga: 19, gd: -6,  pts: 5,  last5: ['L','L','L','D','D'] },
+      { pos: 13, team: 'FUSION FC 13G',               isNVFC: false, mp: 8,  w: 1, d: 0, l: 7, gf: 7,  ga: 59, gd: -52, pts: 3,  last5: ['L','L','L','L','L'] },
+      { pos: 14, team: 'KELOWNA UNITED FC 13G',       isNVFC: false, mp: 9,  w: 0, d: 2, l: 7, gf: 11, ga: 29, gd: -18, pts: 2,  last5: ['L','L','L','L','D'] },
+      { pos: 15, team: 'PORT MOODY SC 13G',           isNVFC: false, mp: 6,  w: 0, d: 1, l: 5, gf: 7,  ga: 23, gd: -16, pts: 1,  last5: ['L','L','L','L','L'] },
+      { pos: 16, team: 'KAMLOOPS UNITED FC 13G',      isNVFC: false, mp: 10, w: 0, d: 1, l: 9, gf: 7,  ga: 66, gd: -59, pts: 1,  last5: ['L','L','L','L','D'] }
+    ];
+
+    // Complete NVFC BCSPL 13G Roster from Comet Game Reports
+    const ROSTER = {
+      1:   { num: 1,   dispNum: '1',  name: 'Aine Matthews',        role: 'Goalkeeper (G)' },
+      3:   { num: 3,   dispNum: '3',  name: 'Kate Hargreaves',      role: 'Outfield' },
+      4:   { num: 4,   dispNum: '4',  name: 'Zoe Baker',            role: 'Outfield' },
+      7:   { num: 7,   dispNum: '7',  name: 'Ellie Hewgill',        role: 'Outfield' },
+      8:   { num: 8,   dispNum: '8',  name: 'Molly Webber',         role: 'Outfield' },
+      9:   { num: 9,   dispNum: '9',  name: 'Sara Zanatta',         role: 'Outfield' },
+      10:  { num: 10,  dispNum: '10', name: 'Nahla McArdle',        role: 'Outfield / GK (1 Start in G)' },
+      11:  { num: 11,  dispNum: '11', name: 'Mackenzie Hermkens',   role: 'Outfield' },
+      12:  { num: 12,  dispNum: '12', name: 'Soleil MacDougall',    role: 'Captain (C)' },
+      13:  { num: 13,  dispNum: '13', name: 'Mika Gatenyo',         role: 'Outfield / GK (1 Start in G)' },
+      14:  { num: 14,  dispNum: '14', name: 'Maya Soliman',         role: 'Outfield' },
+      15:  { num: 15,  dispNum: '15', name: 'Hollie Searles',       role: 'Outfield' },
+      16:  { num: 16,  dispNum: '16', name: 'Alaina Langston',      role: 'Outfield' },
+      17:  { num: 17,  dispNum: '17', name: 'Ella Thompson',        role: 'Outfield' },
+      19:  { num: 19,  dispNum: '19', name: 'Annabelle Gottloeber', role: 'Outfield' },
+      25:  { num: 25,  dispNum: '25', name: 'Aurie Granander',      role: 'Outfield' },
+      210: { num: 210, dispNum: '21', name: 'London Cucca',         role: 'Goalkeeper (G)' }
+    };
+
+    function GL(min, half, sc, note) { return { min: min, half: half, sc: sc, note: note || '' }; }
+    function OG(min, half, player) { return { min: min, half: half, player: player }; }
+    function CD(min, half, num, card, team) { return { min: min, half: half, num: num, card: card, team: team || 'NVFC' }; }
+
+    // 10 Verified Baseline Matches (Sept 13 – Nov 8, 2026)
+    const BASELINE_MATCHES = [
+      {
+        id: 'BCSPL-01', date: '2026-09-13', time: '12:30 PM',
+        opp: 'Nanaimo United FC 13G', venue: 'Nanaimo', ha: 'Away', gf: 3, ga: 2, res: 'W',
+        gk: 13, cap: 12,
+        starters: [13, 3, 4, 8, 11, 12, 15, 16, 17, 19, 25],
+        subs: [1, 7, 9, 10, 14],
+        goals: [GL("8'", 1, 3), GL("39'", 1, 11), GL("61'", 2, 11, 'Match-Winner')],
+        oppGoals: [OG("2'", 1, '#8 Riley Adel'), OG("13'", 1, '#8 Riley Adel')],
+        cards: [CD("12'", 1, 25, 'Red Card', 'NVFC')]
+      },
+      {
+        id: 'BCSPL-02', date: '2026-09-20', time: '1:00 PM',
+        opp: 'Kelowna United FC 13G', venue: 'Kelowna', ha: 'Away', gf: 2, ga: 1, res: 'W',
+        gk: 210, cap: 12,
+        starters: [210, 3, 4, 8, 11, 12, 13, 15, 16, 17, 19],
+        subs: [1, 7, 9, 10, 14],
+        goals: [GL("2'", 1, 17), GL("36'", 1, 10, 'Sub Goal - Match-Winner')],
+        oppGoals: [OG("16'", 1, '#9 Lennox Walker')],
+        cards: []
+      },
+      {
+        id: 'BCSPL-03', date: '2026-09-27', time: '10:00 AM',
+        opp: 'Coastal FC 13G', venue: 'South Surrey Athletic Park', ha: 'Away', gf: 1, ga: 2, res: 'L',
+        gk: 10, cap: 12,
+        starters: [10, 3, 4, 7, 8, 11, 12, 16, 17, 19, 25],
+        subs: [],
+        goals: [GL("44'", 2, 12)],
+        oppGoals: [OG("47'", 2, '#10 Emerson Barber'), OG("75'", 2, '#17 Sonam Bhullar')],
+        cards: []
+      },
+      {
+        id: 'BCSPL-04', date: '2026-10-04', time: '9:00 AM',
+        opp: 'Fusion FC 13G', venue: 'Richmond / Burnaby', ha: 'Away', gf: 8, ga: 0, res: 'W',
+        gk: 1, cap: 12,
+        starters: [1, 4, 7, 8, 10, 11, 12, 15, 16, 17, 25],
+        subs: [3, 9, 14, 19],
+        goals: [
+          GL("16'", 1, 12, 'Match-Winner'),
+          GL("20'", 1, 16),
+          GL("22'", 1, 11),
+          GL("24'", 1, 12),
+          GL("40'", 1, 16),
+          GL("59'", 2, 7),
+          GL("60'", 2, 16, 'Hat-Trick Goal'),
+          GL("70'", 2, 19, 'Sub Goal')
+        ],
+        oppGoals: [],
+        cards: []
+      },
+      {
+        id: 'BCSPL-05', date: '2026-10-17', time: '1:30 PM',
+        opp: 'Pacific FC 13G', venue: 'North Vancouver', ha: 'Home', gf: 1, ga: 1, res: 'D',
+        gk: 1, cap: 12,
+        starters: [1, 3, 4, 8, 11, 12, 15, 16, 17, 19, 25],
+        subs: [7, 9, 10, 13, 14],
+        goals: [GL("—", 1, 0, 'Scorer Unlisted in Comet')],
+        oppGoals: [OG("—", 1, 'Pacific FC')],
+        cards: []
+      },
+      {
+        id: 'BCSPL-06', date: '2026-10-18', time: '9:30 AM',
+        opp: 'Abbotsford SA 13G', venue: 'North Vancouver', ha: 'Home', gf: 2, ga: 1, res: 'W',
+        gk: 1, cap: 12,
+        starters: [1, 4, 7, 8, 12, 13, 14, 16, 17, 19, 25],
+        subs: [3, 9, 10, 11, 15],
+        goals: [GL("39'", 1, 3, 'Sub Goal'), GL("50'", 2, 10, 'Sub Goal - Match-Winner')],
+        oppGoals: [OG("76'", 2, '#7 H. Holland')],
+        cards: []
+      },
+      {
+        id: 'BCSPL-07', date: '2026-10-24', time: '7:30 PM',
+        opp: 'Surrey FC 13G', venue: 'Confederation Turf', ha: 'Home', gf: 2, ga: 0, res: 'W',
+        gk: 1, cap: 12,
+        starters: [1, 4, 7, 8, 11, 12, 15, 16, 17, 19, 25],
+        subs: [3, 9, 10, 13, 14],
+        goals: [GL("24'", 1, 11, 'Match-Winner'), GL("42'", 2, 11)],
+        oppGoals: [],
+        cards: [CD("75'", 2, 17, 'Yellow Card (#17 P. Minhas)', 'Opp')]
+      },
+      {
+        id: 'BCSPL-08', date: '2026-10-25', time: '1:00 PM',
+        opp: 'Port Moody SC 13G', venue: 'North Vancouver', ha: 'Home', gf: 5, ga: 1, res: 'W',
+        gk: 1, cap: 12,
+        starters: [1, 3, 4, 8, 10, 12, 13, 16, 17, 19, 25],
+        subs: [7, 9, 11, 14, 15],
+        goals: [
+          GL("15'", 1, 16),
+          GL("37'", 1, 13, 'Match-Winner'),
+          GL("53'", 2, 12),
+          GL("55'", 2, 12),
+          GL("76'", 2, 10)
+        ],
+        oppGoals: [OG("22'", 1, '#16 Angelina Aiello')],
+        cards: []
+      },
+      {
+        id: 'BCSPL-09', date: '2026-11-01', time: '2:00 PM',
+        opp: 'Kamloops United FC 13G', venue: 'MacArthur Island, Kamloops', ha: 'Away', gf: 7, ga: 1, res: 'W',
+        gk: 1, cap: 12,
+        starters: [1, 4, 8, 10, 11, 12, 13, 14, 17, 19, 25],
+        subs: [3, 7, 9, 15, 16],
+        goals: [
+          GL("15'", 1, 11),
+          GL("21'", 1, 10, 'Match-Winner'),
+          GL("26'", 1, 17),
+          GL("40+2'", 1, 12),
+          GL("43'", 2, 7, 'Sub Goal'),
+          GL("68'", 2, 15, 'Sub Goal'),
+          GL("80+1'", 2, 15, 'Sub Goal')
+        ],
+        oppGoals: [OG("35'", 1, '#6 Macy De Courcey')],
+        cards: []
+      },
+      {
+        id: 'BCSPL-10', date: '2026-11-08', time: '9:30 AM',
+        opp: 'TSS Rovers 13G', venue: 'North Vancouver', ha: 'Home', gf: 2, ga: 1, res: 'W',
+        gk: 1, cap: 12,
+        starters: [1, 4, 7, 8, 10, 11, 12, 15, 17, 19, 25],
+        subs: [3, 9, 13, 14, 16],
+        goals: [
+          GL("31'", 1, 12),
+          GL("49'", 2, 3, 'Sub Goal - Match-Winner')
+        ],
+        oppGoals: [OG("10'", 1, '#10 Claudia Jerke')],
+        cards: []
+      }
+    ];
+
+    let MATCHES = BASELINE_MATCHES.slice().sort(function(a, b) { return String(a.date).localeCompare(String(b.date)); });
+    let STANDINGS = BASELINE_STANDINGS.slice().sort(function(a, b) { return Number(a.pos) - Number(b.pos); });
+    let expandedPlayerNum = null;
+    let expandedGameId = null;
+
+    function getFilteredMatches() {
+      const vf = document.getElementById('venueFilter').value;
+      return MATCHES.filter(function(m) { return vf === 'ALL' || m.ha === vf; });
+    }
+
+    function parseMinNum(mStr) {
+      if (!mStr || mStr === '—') return null;
+      const clean = String(mStr).replace("'", "");
+      if (clean.indexOf('+') !== -1) {
+        return parseInt(clean.split('+')[0], 10);
+      }
+      const val = parseInt(clean, 10);
+      return isNaN(val) ? null : val;
+    }
+
+    function computeStats(matches) {
+      let w = 0, d = 0, l = 0, gf = 0, ga = 0, cs = 0, starterGoals = 0, subGoals = 0;
+      const intervalsGF = [0, 0, 0, 0];
+      const intervalsGA = [0, 0, 0, 0];
+      let h1GF = 0, h2GF = 0, h1GA = 0, h2GA = 0;
+
+      const players = {};
+      Object.keys(ROSTER).forEach(function(k) {
+        const r = ROSTER[k];
+        players[r.num] = {
+          num: r.num, dispNum: r.dispNum, name: r.name, role: r.role,
+          gp: 0, starts: 0, subs: 0, goals: 0, starterG: 0, subG: 0,
+          gkStarts: 0, rc: 0, logs: []
+        };
+      });
+
+      const gks = {};
+
+      matches.forEach(function(m) {
+        if (m.res === 'W') w++;
+        else if (m.res === 'D') d++;
+        else l++;
+
+        gf += Number(m.gf || 0);
+        ga += Number(m.ga || 0);
+        if (Number(m.ga || 0) === 0) cs++;
+
+        const gkNum = m.gk || 1;
+        if (!gks[gkNum]) {
+          const rObj = ROSTER[gkNum] || { dispNum: String(gkNum), name: 'Player #' + gkNum };
+          gks[gkNum] = { num: gkNum, dispNum: rObj.dispNum, name: rObj.name, starts: 0, w: 0, d: 0, l: 0, ga: 0, cs: 0 };
+        }
+        gks[gkNum].starts++;
+        if (m.res === 'W') gks[gkNum].w++;
+        else if (m.res === 'D') gks[gkNum].d++;
+        else gks[gkNum].l++;
+        gks[gkNum].ga += Number(m.ga || 0);
+        if (Number(m.ga || 0) === 0) gks[gkNum].cs++;
+
+        if (players[gkNum]) players[gkNum].gkStarts++;
+
+        (m.starters || []).forEach(function(sNum) {
+          if (players[sNum]) {
+            const p = players[sNum];
+            p.gp++;
+            p.starts++;
+            const isGK = (m.gk === sNum);
+            const isCap = (m.cap === sNum);
+            const roleTag = isGK ? 'Started in Goal (GK)' : isCap ? 'Starting XI (Captain C)' : 'Starting XI';
+            p.logs.push({ match: m, status: 'Starter', roleTag: roleTag, goals: 0, cards: [], goalMins: [] });
+          }
+        });
+
+        (m.subs || []).forEach(function(subNum) {
+          if (players[subNum]) {
+            const p = players[subNum];
+            p.gp++;
+            p.subs++;
+            p.logs.push({ match: m, status: 'Substitute', roleTag: 'Substitute', goals: 0, cards: [], goalMins: [] });
+          }
+        });
+
+        (m.goals || []).forEach(function(gl) {
+          const minNum = parseMinNum(gl.min);
+          if (minNum !== null) {
+            if (gl.half === 1) {
+              h1GF++;
+              if (minNum <= 20) intervalsGF[0]++;
+              else intervalsGF[1]++;
+            } else {
+              h2GF++;
+              if (minNum <= 60) intervalsGF[2]++;
+              else intervalsGF[3]++;
+            }
+          }
+
+          const sc = gl.sc;
+          if (sc && players[sc]) {
+            const p = players[sc];
+            p.goals++;
+            const isStarter = (m.starters || []).indexOf(sc) !== -1;
+            if (isStarter) { p.starterG++; starterGoals++; }
+            else { p.subG++; subGoals++; }
+
+            const lg = p.logs.find(function(x) { return x.match.id === m.id; });
+            if (lg) {
+              lg.goals++;
+              lg.goalMins.push(gl.min + (gl.note ? ' (' + gl.note + ')' : ''));
+            }
+          }
+        });
+
+        (m.oppGoals || []).forEach(function(ogl) {
+          const minNum = parseMinNum(ogl.min);
+          if (minNum !== null) {
+            if (ogl.half === 1) {
+              h1GA++;
+              if (minNum <= 20) intervalsGA[0]++;
+              else intervalsGA[1]++;
+            } else {
+              h2GA++;
+              if (minNum <= 60) intervalsGA[2]++;
+              else intervalsGA[3]++;
+            }
+          }
+        });
+
+        (m.cards || []).forEach(function(cd) {
+          if (cd.team === 'NVFC' && players[cd.num]) {
+            players[cd.num].rc++;
+            const lg = players[cd.num].logs.find(function(x) { return x.match.id === m.id; });
+            if (lg) lg.cards.push(cd.card + ' (' + cd.min + ')');
+          }
+        });
+      });
+
+      const pts = w * 3 + d * 1;
+      return {
+        gp: matches.length, w: w, d: d, l: l, pts: pts, gf: gf, ga: ga, cs: cs,
+        starterGoals: starterGoals, subGoals: subGoals,
+        intervalsGF: intervalsGF, intervalsGA: intervalsGA,
+        h1GF: h1GF, h2GF: h2GF, h1GA: h1GA, h2GA: h2GA,
+        players: players, gks: gks
+      };
+    }
+
+    function renderKPIs(stats) {
+      const gd = stats.gf - stats.ga;
+      const gdStr = gd > 0 ? '+' + gd : String(gd);
+      const nvfcRow = STANDINGS.find(function(s) { return s.isNVFC || s.team.indexOf('NVFC') !== -1 || s.team.indexOf('NORTH VANCOUVER') !== -1; });
+      const rankStr = nvfcRow ? '#' + nvfcRow.pos + ' in Table' : '#1 in Table';
+      const rankPts = nvfcRow ? nvfcRow.pts + ' Pts • BCSPL Girls U14' : stats.pts + ' Pts • BCSPL Girls U14';
+      const attrG = Math.max(1, stats.starterGoals + stats.subGoals);
+      const stShare = ((stats.starterGoals / attrG) * 100).toFixed(1);
+      const sbShare = (100 - Number(stShare)).toFixed(1);
+
+      const cards = [
+        { label: 'League Standing', val: rankStr, sub: rankPts, color: 'text-amber-300' },
+        { label: 'Record & Points', val: stats.w + 'W-' + stats.d + 'D-' + stats.l + 'L', sub: stats.pts + ' Pts (' + (stats.pts / Math.max(1, stats.gp)).toFixed(2) + ' Pts/M)', color: 'text-white' },
+        { label: 'Goals For (GF)', val: stats.gf + ' GF', sub: (stats.gf / Math.max(1, stats.gp)).toFixed(2) + ' GF / Match (Max: 8)', color: 'text-emerald-400' },
+        { label: 'Goals Against', val: stats.ga + ' GA', sub: (stats.ga / Math.max(1, stats.gp)).toFixed(2) + ' GA/M • ' + stats.cs + ' Clean Sheets', color: 'text-sky-400' },
+        { label: 'Goal Differential', val: gdStr, sub: '1st Half: +' + (stats.h1GF - stats.h1GA) + ' • 2nd Half: +' + (stats.h2GF - stats.h2GA), color: 'text-emerald-300' },
+        { label: 'XI vs. Bench Goals', val: stats.starterGoals + ' XI / ' + stats.subGoals + ' Sub', sub: stShare + '% Starter • ' + sbShare + '% Bench', color: 'text-purple-300' }
+      ];
+
+      document.getElementById('kpiGrid').innerHTML = cards.map(function(c) {
+        return '<div class="glass-card rounded-2xl p-3.5 sm:p-4">' +
+          '<div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">' + c.label + '</div>' +
+          '<div class="text-xl sm:text-2xl font-extrabold mt-1 ' + c.color + '">' + c.val + '</div>' +
+          '<div class="text-[11px] text-slate-400 mt-0.5">' + c.sub + '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function renderStandings() {
+      document.getElementById('standingsTableBody').innerHTML = STANDINGS.map(function(s) {
+        const isNV = s.isNVFC || s.team.indexOf('NVFC') !== -1 || s.team.indexOf('NORTH VANCOUVER') !== -1;
+        const dispTeam = isNV ? 'NVFC BCSPL 13G' : s.team;
+        const gdStr = s.gd > 0 ? '+' + s.gd : String(s.gd);
+        const gdColor = s.gd > 0 ? 'text-emerald-400' : s.gd < 0 ? 'text-rose-400' : 'text-slate-300';
+        const dotsHtml = (s.last5 || []).map(function(r) {
+          const dotColor = r === 'W' ? 'bg-emerald-500' : r === 'D' ? 'bg-amber-400' : 'bg-rose-500';
+          return '<span title="' + r + '" class="w-2.5 h-2.5 rounded-full inline-block ' + dotColor + '"></span>';
+        }).join('');
+
+        return '<tr class="transition ' + (isNV ? 'bg-red-500/15 font-bold border-l-4 border-l-red-500' : 'hover:bg-slate-800/50') + '">' +
+          '<td class="py-2.5 pr-2 text-center font-bold ' + (isNV ? 'text-red-300' : 'text-slate-400') + '">' + s.pos + '</td>' +
+          '<td class="py-2.5 px-2 font-bold ' + (isNV ? 'text-white' : 'text-slate-200') + '">' + dispTeam + '</td>' +
+          '<td class="py-2.5 px-1.5 text-center text-slate-300">' + s.mp + '</td>' +
+          '<td class="py-2.5 px-1.5 text-center text-emerald-400 font-semibold">' + s.w + '</td>' +
+          '<td class="py-2.5 px-1.5 text-center text-amber-300">' + s.d + '</td>' +
+          '<td class="py-2.5 px-1.5 text-center text-rose-400">' + s.l + '</td>' +
+          '<td class="py-2.5 px-1.5 text-center text-slate-300 hidden sm:table-cell">' + s.gf + '</td>' +
+          '<td class="py-2.5 px-1.5 text-center text-slate-300 hidden sm:table-cell">' + s.ga + '</td>' +
+          '<td class="py-2.5 px-1.5 text-center font-bold ' + gdColor + '">' + gdStr + '</td>' +
+          '<td class="py-2.5 px-2 text-center"><span class="px-2 py-0.5 rounded-full text-xs font-extrabold ' + (isNV ? 'bg-amber-400 text-slate-950' : 'bg-slate-800 text-amber-300') + '">' + s.pts + ' pts</span></td>' +
+          '<td class="py-2.5 pl-2 text-right"><div class="inline-flex items-center gap-1">' + dotsHtml + '</div></td>' +
+        '</tr>';
+      }).join('');
+    }
+
+    function jumpToMatchFromTimeline(matchId) {
+      expandedGameId = matchId;
+      switchTab('gamelog');
+      renderGameLog(getFilteredMatches());
+    }
+
+    function renderOverview(matches, stats) {
+      renderStandings();
+
+      // 1. Match-by-Match Goal Timeline Sparkline
+      let maxGoals = 8;
+      matches.forEach(function(m) {
+        if (m.gf > maxGoals) maxGoals = m.gf;
+        if (m.ga > maxGoals) maxGoals = m.ga;
+      });
+
+      document.getElementById('timelineChartBox').innerHTML =
+        '<div class="min-w-[460px] flex items-center justify-between gap-2 pt-2 pb-1 px-1">' +
+        matches.map(function(m) {
+          const gfH = Math.max(4, Math.round((m.gf / maxGoals) * 48));
+          const gaH = Math.max(4, Math.round((m.ga / maxGoals) * 48));
+          const barTone = m.res === 'W' ? 'bg-emerald-500' : m.res === 'D' ? 'bg-amber-400' : 'bg-rose-500';
+          const txtTone = m.res === 'W' ? 'text-emerald-400' : m.res === 'D' ? 'text-amber-300' : 'text-rose-400';
+          const shortOpp = m.opp.replace(' 13G', '').replace(' United', ' Utd').replace(' FC', '').replace(' SC', '').replace(' SA', '');
+          return '<div onclick="jumpToMatchFromTimeline(\'' + m.id + '\')" title="' + m.date + ' vs ' + m.opp + ' (' + m.res + ' ' + m.gf + '-' + m.ga + ')" class="flex-1 flex flex-col items-center cursor-pointer hover:bg-slate-800/50 rounded-xl py-1.5 px-1 transition">' +
+            '<span class="text-xs font-extrabold text-emerald-400 mb-0.5">' + m.gf + '</span>' +
+            '<div class="h-12 w-full flex items-end justify-center">' +
+              '<div class="w-4 sm:w-5 rounded-t ' + barTone + '" style="height:' + gfH + 'px"></div>' +
+            '</div>' +
+            '<div class="w-full border-t border-slate-700 my-0.5"></div>' +
+            '<div class="h-12 w-full flex items-start justify-center">' +
+              '<div class="w-4 sm:w-5 rounded-b bg-rose-500/80" style="height:' + gaH + 'px"></div>' +
+            '</div>' +
+            '<span class="text-xs font-bold text-rose-400 mt-0.5">' + m.ga + '</span>' +
+            '<span class="text-[10px] font-extrabold mt-0.5 ' + txtTone + '">' + m.res + '</span>' +
+            '<span class="text-[10px] text-slate-300 font-medium truncate max-w-[68px]">' + shortOpp + '</span>' +
+            '<span class="text-[9px] text-slate-500">' + m.date.slice(5) + '</span>' +
+          '</div>';
+        }).join('') +
+        '</div>';
+
+      // 2. Starting Lineup Utilization Chart (All Players styled uniformly)
+      const maxGP = Math.max(1, stats.gp);
+      const byStarts = Object.values(stats.players)
+        .filter(function(p) { return p.gp > 0; })
+        .sort(function(a, b) { return b.starts - a.starts || b.gp - a.gp || b.goals - a.goals || a.num - b.num; });
+
+      document.getElementById('startsChartBox').innerHTML = byStarts.map(function(p) {
+        const startPctBar = Math.round((p.starts / maxGP) * 100);
+        const subPctBar = Math.round((p.subs / maxGP) * 100);
+        const ratePct = Math.round((p.starts / Math.max(1, p.gp)) * 100);
+        return '<div class="space-y-1 p-1 rounded-lg">' +
+          '<div class="flex justify-between text-xs">' +
+            '<span class="font-bold text-white">#' + p.dispNum + ' ' + p.name + '</span>' +
+            '<span class="font-bold text-emerald-400">' + p.starts + ' Starts <span class="text-slate-400 font-normal">/ ' + p.subs + ' Sub (' + p.gp + ' GP • ' + ratePct + '%)</span></span>' +
+          '</div>' +
+          '<div class="w-full bg-slate-800/80 rounded-full h-3 flex overflow-hidden">' +
+            (p.starts > 0 ? '<div class="bg-emerald-500 h-3" style="width:' + startPctBar + '%"></div>' : '') +
+            (p.subs > 0 ? '<div class="bg-sky-400 h-3" style="width:' + subPctBar + '%"></div>' : '') +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      // 3. Top Scorers Chart (Starter Goals vs Sub Goals)
+      const scorers = Object.values(stats.players)
+        .filter(function(p) { return p.goals > 0; })
+        .sort(function(a, b) { return b.goals - a.goals || b.starts - a.starts || a.num - b.num; });
+      const maxPlayerG = Math.max(1, scorers[0] ? scorers[0].goals : 1);
+
+      document.getElementById('scorersChartBox').innerHTML = scorers.map(function(p) {
+        const stPct = Math.round((p.starterG / maxPlayerG) * 100);
+        const sbPct = Math.round((p.subG / maxPlayerG) * 100);
+        return '<div class="space-y-1">' +
+          '<div class="flex justify-between text-xs">' +
+            '<span class="font-bold text-white">#' + p.dispNum + ' ' + p.name + '</span>' +
+            '<span class="font-bold text-amber-300">' + p.goals + ' G <span class="text-slate-400 font-normal">(' + p.starterG + ' XI, ' + p.subG + ' Sub)</span></span>' +
+          '</div>' +
+          '<div class="w-full bg-slate-800/80 rounded-full h-3.5 flex overflow-hidden">' +
+            (p.starterG > 0 ? '<div class="bg-emerald-500 h-3.5" style="width:' + stPct + '%"></div>' : '') +
+            (p.subG > 0 ? '<div class="bg-amber-400 h-3.5" style="width:' + sbPct + '%"></div>' : '') +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      // 4. 20-Minute Interval Scoring Chart
+      const intLabels = ["1'–20' (Early 1st Half)", "21'–40+' (Late 1st Half)", "41'–60' (Early 2nd Half)", "61'–80+' (Late 2nd Half)"];
+      const maxInt = Math.max(1, ...stats.intervalsGF, ...stats.intervalsGA);
+      document.getElementById('intervalChartBox').innerHTML = intLabels.map(function(lbl, idx) {
+        const gf = stats.intervalsGF[idx];
+        const ga = stats.intervalsGA[idx];
+        const diff = gf - ga;
+        const gfPct = Math.round((gf / maxInt) * 100);
+        const gaPct = Math.round((ga / maxInt) * 100);
+        return '<div>' +
+          '<div class="flex justify-between text-xs font-semibold mb-1">' +
+            '<span class="text-slate-200">' + lbl + '</span>' +
+            '<span class="' + (diff >= 0 ? 'text-emerald-400' : 'text-amber-300') + '">' + (diff > 0 ? '+' + diff : diff) + ' (' + gf + ' GF vs. ' + ga + ' GA)</span>' +
+          '</div>' +
+          '<div class="space-y-1">' +
+            '<div class="flex items-center gap-2">' +
+              '<div class="w-full bg-slate-800/80 rounded-full h-3 overflow-hidden">' +
+                '<div class="bg-emerald-500 h-3 rounded-full" style="width:' + Math.max(4, gfPct) + '%"></div>' +
+              '</div>' +
+              '<span class="text-xs font-bold text-emerald-400 w-12 text-right">' + gf + ' GF</span>' +
+            '</div>' +
+            '<div class="flex items-center gap-2">' +
+              '<div class="w-full bg-slate-800/80 rounded-full h-3 overflow-hidden">' +
+                '<div class="bg-rose-500 h-3 rounded-full" style="width:' + Math.max(4, gaPct) + '%"></div>' +
+              '</div>' +
+              '<span class="text-xs font-bold text-rose-400 w-12 text-right">' + ga + ' GA</span>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      // 5. Home vs. Away Performance Split
+      const homeM = matches.filter(function(m) { return m.ha === 'Home'; });
+      const awayM = matches.filter(function(m) { return m.ha === 'Away'; });
+      const hSt = computeStats(homeM);
+      const aSt = computeStats(awayM);
+      const splitRows = [
+        { label: 'Record & Points', hText: hSt.w + 'W-' + hSt.d + 'D-' + hSt.l + 'L (' + hSt.pts + ' Pts)', aText: aSt.w + 'W-' + aSt.d + 'D-' + aSt.l + 'L (' + aSt.pts + ' Pts)',
+          hVal: hSt.pts / Math.max(1, hSt.gp), aVal: aSt.pts / Math.max(1, aSt.gp) },
+        { label: 'Goals For / Match', hText: (hSt.gf / Math.max(1, hSt.gp)).toFixed(2) + ' (' + hSt.gf + ' GF)', aText: (aSt.gf / Math.max(1, aSt.gp)).toFixed(2) + ' (' + aSt.gf + ' GF)',
+          hVal: hSt.gf / Math.max(1, hSt.gp), aVal: aSt.gf / Math.max(1, aSt.gp) },
+        { label: 'Goals Against / Match', hText: (hSt.ga / Math.max(1, hSt.gp)).toFixed(2) + ' (' + hSt.ga + ' GA)', aText: (aSt.ga / Math.max(1, aSt.gp)).toFixed(2) + ' (' + aSt.ga + ' GA)',
+          hVal: hSt.ga / Math.max(1, hSt.gp), aVal: aSt.ga / Math.max(1, aSt.gp) },
+        { label: 'Clean Sheets', hText: hSt.cs + ' CS (' + hSt.gp + ' GP)', aText: aSt.cs + ' CS (' + aSt.gp + ' GP)',
+          hVal: Math.max(0.5, hSt.cs), aVal: Math.max(0.5, aSt.cs) }
+      ];
+
+      document.getElementById('homeAwaySplitBox').innerHTML =
+        '<div class="flex justify-between text-xs font-bold uppercase tracking-wider px-1">' +
+          '<span class="text-blue-400">Home (' + hSt.gp + ' GP)</span>' +
+          '<span class="text-amber-400">Away (' + aSt.gp + ' GP)</span>' +
+        '</div>' +
+        splitRows.map(function(r) {
+          const tot = Math.max(0.01, r.hVal + r.aVal);
+          const hPct = Math.round((r.hVal / tot) * 100);
+          const aPct = 100 - hPct;
+          return '<div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5">' +
+            '<div class="flex justify-between text-xs">' +
+              '<span class="font-bold text-blue-300">' + r.hText + '</span>' +
+              '<span class="text-slate-400 font-semibold">' + r.label + '</span>' +
+              '<span class="font-bold text-amber-300">' + r.aText + '</span>' +
+            '</div>' +
+            '<div class="w-full h-2.5 rounded-full bg-slate-800 flex overflow-hidden">' +
+              '<div class="bg-blue-500 h-2.5" style="width:' + hPct + '%"></div>' +
+              '<div class="bg-amber-500 h-2.5" style="width:' + aPct + '%"></div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+
+      // 6. Goalkeeper Starting Rotation Cards
+      const gkList = Object.values(stats.gks).sort(function(a, b) { return b.starts - a.starts; });
+      document.getElementById('gkCardsBox').innerHTML = gkList.map(function(g) {
+        const badgeLabel = g.num === 13 ? '#21 / #13' : '#' + g.dispNum;
+        return '<div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">' +
+          '<div>' +
+            '<div class="font-bold text-white text-sm">' + badgeLabel + ' ' + g.name + '</div>' +
+            '<div class="text-xs text-slate-400 mt-0.5">' + g.starts + ' GK ' + (g.starts > 1 ? 'Starts' : 'Start') + ' • Record: ' + g.w + 'W-' + g.d + 'D-' + g.l + 'L</div>' +
+            '<div class="text-[11px] text-emerald-400 font-semibold mt-0.5">' + g.cs + ' Clean ' + (g.cs === 1 ? 'Sheet' : 'Sheets') + '</div>' +
+          '</div>' +
+          '<div class="text-right">' +
+            '<div class="text-base font-extrabold text-sky-400">' + (g.ga / Math.max(1, g.starts)).toFixed(2) + ' GAA</div>' +
+            '<div class="text-xs text-slate-400">' + g.ga + ' GA</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      // 7. Starter vs Bench Goal Share
+      const attributedG = Math.max(1, stats.starterGoals + stats.subGoals);
+      const stPct = Math.round((stats.starterGoals / attributedG) * 100);
+      const sbPct = 100 - stPct;
+      document.getElementById('benchImpactBox').innerHTML =
+        '<div class="w-full h-4 rounded-full bg-slate-800 flex overflow-hidden mb-2">' +
+          '<div class="bg-emerald-500 h-4" style="width:' + stPct + '%"></div>' +
+          '<div class="bg-amber-400 h-4" style="width:' + sbPct + '%"></div>' +
+        '</div>' +
+        '<div class="grid grid-cols-2 gap-2 text-center text-xs">' +
+          '<div class="p-2 rounded-lg bg-slate-900 border border-slate-800"><div class="text-emerald-400 font-extrabold text-sm">' + stats.starterGoals + ' Goals (' + stPct + '%)</div><div class="text-[11px] text-slate-400">From Starting XI</div></div>' +
+          '<div class="p-2 rounded-lg bg-slate-900 border border-slate-800"><div class="text-amber-300 font-extrabold text-sm">' + stats.subGoals + ' Goals (' + sbPct + '%)</div><div class="text-[11px] text-slate-400">From Substitutes</div></div>' +
+        '</div>';
+
+      const subScorers = Object.values(stats.players).filter(function(p) { return p.subG > 0; }).sort(function(a, b) { return b.subG - a.subG; });
+      document.getElementById('superSubList').innerHTML = subScorers.map(function(p) {
+        return '<div class="flex items-center justify-between bg-slate-900/70 px-3 py-1.5 rounded-lg border border-slate-800">' +
+          '<span class="text-slate-200 font-medium">#' + p.dispNum + ' ' + p.name + '</span>' +
+          '<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">' + p.subG + ' Sub ' + (p.subG > 1 ? 'Goals' : 'Goal') + '</span>' +
+        '</div>';
+      }).join('');
+    }
+
+    function togglePlayerInline(num) {
+      expandedPlayerNum = (expandedPlayerNum === num) ? null : num;
+      renderLeaderboard();
+    }
+
+    function buildPlayerLogsHtml(p) {
+      if (!p.logs.length) {
+        return '<div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-400">No match appearances in current filter.</div>';
+      }
+      return p.logs.map(function(lg) {
+        const m = lg.match;
+        const isStarter = lg.status === 'Starter';
+        const statusBadge = isStarter
+          ? '<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[11px]">' + lg.roleTag + '</span>'
+          : '<span class="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 font-semibold text-[11px]">Substitute</span>';
+        const goalBadge = lg.goals > 0
+          ? '<span class="px-2 py-0.5 rounded bg-amber-500/25 text-amber-300 font-extrabold text-[11px]">⚽ ' + lg.goals + 'G (' + lg.goalMins.join(', ') + ')</span>'
+          : '';
+        const cardBadge = lg.cards.length > 0
+          ? '<span class="px-2 py-0.5 rounded bg-rose-500/25 text-rose-300 font-bold text-[11px]">🟥 ' + lg.cards.join(', ') + '</span>'
+          : '';
+        return '<div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">' +
+          '<div>' +
+            '<div class="font-bold text-white text-xs sm:text-sm">' + m.date + ' vs. ' + m.opp.replace(' 13G', '') + ' <span class="text-xs font-mono text-slate-400">(' + m.res + ' ' + m.gf + '–' + m.ga + ')</span></div>' +
+            '<div class="text-[11px] text-slate-400 mt-0.5">' + m.ha + ' • ' + m.time + '</div>' +
+          '</div>' +
+          '<div class="flex flex-wrap items-center gap-1.5">' + statusBadge + goalBadge + cardBadge + '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function renderLeaderboard() {
+      const stats = computeStats(getFilteredMatches());
+      const q = (document.getElementById('playerSearch') ? document.getElementById('playerSearch').value : '').toLowerCase().trim();
+      const sortBy = document.getElementById('sortSelect') ? document.getElementById('sortSelect').value : 'starts';
+
+      const list = Object.values(stats.players)
+        .filter(function(p) { return !q || p.name.toLowerCase().indexOf(q) !== -1 || String(p.dispNum).indexOf(q) !== -1; })
+        .sort(function(a, b) {
+          if (sortBy === 'goals') return b.goals - a.goals || b.starts - a.starts || a.num - b.num;
+          if (sortBy === 'gp') return b.gp - a.gp || b.starts - a.starts || b.goals - a.goals;
+          if (sortBy === 'startPct') {
+            const pctA = a.gp ? a.starts / a.gp : 0;
+            const pctB = b.gp ? b.starts / b.gp : 0;
+            return pctB - pctA || b.starts - a.starts;
+          }
+          return b.starts - a.starts || b.goals - a.goals || b.gp - a.gp || a.num - b.num;
+        });
+
+      // 1. Mobile Stacked Cards (< md)
+      document.getElementById('leaderboardMobileCards').innerHTML = list.map(function(p) {
+        const isExpanded = expandedPlayerNum === p.num;
+        const startPct = p.gp > 0 ? Math.round((p.starts / p.gp) * 100) : 0;
+
+        let cardHtml = '<div class="rounded-2xl border transition overflow-hidden ' +
+          (isExpanded ? 'bg-slate-900 border-red-500/70' : 'bg-slate-900/75 border-slate-800') + '">' +
+          '<div onclick="togglePlayerInline(' + p.num + ')" class="p-3.5 cursor-pointer">' +
+            '<div class="flex items-center justify-between gap-2">' +
+              '<div class="flex items-center gap-2">' +
+                '<span class="px-2 py-0.5 rounded-lg text-xs font-extrabold bg-slate-800 text-slate-200">#' + p.dispNum + '</span>' +
+                '<span class="font-extrabold text-white text-base">' + p.name + '</span>' +
+              '</div>' +
+              '<div class="flex items-center gap-2">' +
+                '<span class="px-2.5 py-1 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-extrabold text-xs">' + p.starts + ' Starts</span>' +
+                '<span class="text-slate-400 text-xs">' + (isExpanded ? '▴' : '▾') + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="flex flex-wrap items-center gap-1.5 mt-2.5 text-xs">' +
+              '<span class="px-2 py-0.5 rounded-md bg-slate-800 text-slate-200 font-semibold">' + p.gp + ' GP (' + startPct + '% Start)</span>' +
+              '<span class="px-2 py-0.5 rounded-md bg-sky-500/15 text-sky-300 font-semibold">' + p.subs + ' Sub</span>' +
+              '<span class="px-2 py-0.5 rounded-md ' + (p.goals > 0 ? 'bg-amber-500/20 text-amber-300 font-extrabold' : 'bg-slate-800/60 text-slate-500') + '">⚽ ' + p.goals + ' G</span>' +
+              (p.gkStarts > 0 ? '<span class="px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-300 font-semibold">🧤 ' + p.gkStarts + ' GK Start</span>' : '') +
+              (p.rc > 0 ? '<span class="px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 font-semibold">🟥 ' + p.rc + ' RC</span>' : '') +
+            '</div>' +
+          '</div>';
+
+        if (isExpanded) {
+          cardHtml += '<div class="p-3.5 bg-slate-950 border-t border-slate-800 space-y-2.5 inline-drawer">' +
+            '<div class="flex items-center justify-between text-xs">' +
+              '<span class="font-bold text-red-300 uppercase tracking-wider">Match Lineup & Scoring Log (' + p.gp + ' GP)</span>' +
+              '<button onclick="togglePlayerInline(' + p.num + ')" class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-bold">Close ✕</button>' +
+            '</div>' +
+            '<div class="space-y-2 max-h-80 overflow-y-auto">' + buildPlayerLogsHtml(p) + '</div>' +
+          '</div>';
+        }
+        cardHtml += '</div>';
+        return cardHtml;
+      }).join('');
+
+      // 2. Desktop Table (>= md)
+      document.getElementById('leaderboardBody').innerHTML = list.map(function(p) {
+        const isExpanded = expandedPlayerNum === p.num;
+        const startPct = p.gp > 0 ? ((p.starts / p.gp) * 100).toFixed(1) : '0.0';
+
+        const mainRow = '<tr onclick="togglePlayerInline(' + p.num + ')" class="cursor-pointer transition ' +
+          (isExpanded ? 'bg-red-950/40' : 'hover:bg-slate-800/60') + '">' +
+          '<td class="py-3 pr-2 font-bold text-slate-300">#' + p.dispNum + '</td>' +
+          '<td class="py-3 px-2 font-bold text-white"><span class="mr-1.5 text-slate-400">' + (isExpanded ? '▾' : '▸') + '</span>' + p.name + '</td>' +
+          '<td class="py-3 px-2 text-center font-semibold">' + p.gp + '</td>' +
+          '<td class="py-3 px-2 text-center font-extrabold text-emerald-400 text-base">' + p.starts + '</td>' +
+          '<td class="py-3 px-2 text-center font-semibold text-sky-400">' + p.subs + '</td>' +
+          '<td class="py-3 px-2">' +
+            '<div class="flex items-center gap-2">' +
+              '<div class="w-16 bg-slate-800 rounded-full h-2 overflow-hidden"><div class="bg-emerald-500 h-2" style="width:' + Math.round(Number(startPct)) + '%"></div></div>' +
+              '<span class="text-xs text-slate-300 font-semibold">' + startPct + '%</span>' +
+            '</div>' +
+          '</td>' +
+          '<td class="py-3 px-2 text-center font-extrabold text-amber-300 text-base">' + p.goals + '</td>' +
+          '<td class="py-3 px-2 text-center text-emerald-300">' + p.starterG + '</td>' +
+          '<td class="py-3 px-2 text-center text-sky-300">' + p.subG + '</td>' +
+          '<td class="py-3 px-2 text-center text-slate-300">' + (p.goals / Math.max(1, p.gp)).toFixed(2) + '</td>' +
+          '<td class="py-3 pl-2 text-xs text-slate-400">' + p.role + (p.rc ? ' • 1 Red Card' : '') + '</td>' +
+        '</tr>';
+
+        if (!isExpanded) return mainRow;
+
+        const detailRow = '<tr class="bg-slate-950/95">' +
+          '<td colspan="11" class="p-4 border-l-4 border-l-red-500">' +
+            '<div class="inline-drawer space-y-3">' +
+              '<div class="flex items-center justify-between">' +
+                '<div>' +
+                  '<h4 class="text-sm font-extrabold text-white">#' + p.dispNum + ' ' + p.name + ' — Match Lineup & Scoring Log (' + p.starts + ' Starts, ' + p.subs + ' Sub in ' + p.gp + ' GP)</h4>' +
+                  '<p class="text-xs text-slate-400">Goals: ' + p.goals + ' (' + p.starterG + ' as Starter, ' + p.subG + ' as Substitute)</p>' +
+                '</div>' +
+                '<button onclick="togglePlayerInline(' + p.num + ')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold cursor-pointer">Close ✕</button>' +
+              '</div>' +
+              '<div class="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-80 overflow-y-auto pr-1">' + buildPlayerLogsHtml(p) + '</div>' +
+            '</div>' +
+          '</td>' +
+        '</tr>';
+
+        return mainRow + detailRow;
+      }).join('');
+    }
+
+    function toggleGameInline(matchId) {
+      expandedGameId = (expandedGameId === matchId) ? null : matchId;
+      renderGameLog(getFilteredMatches());
+    }
+
+    function buildMatchDetailHtml(m) {
+      const goalsHtml = (m.goals || []).map(function(gl) {
+        const scName = gl.sc && ROSTER[gl.sc] ? '#' + ROSTER[gl.sc].dispNum + ' ' + ROSTER[gl.sc].name : 'Team Goal (Unlisted)';
+        return '<div class="p-2 rounded-lg bg-slate-900 border border-slate-800 flex justify-between items-center text-xs">' +
+          '<span><strong>' + gl.min + ' (Half ' + gl.half + ')</strong> — <span class="text-emerald-400 font-bold">⚽ ' + scName + '</span></span>' +
+          (gl.note ? '<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold">' + gl.note + '</span>' : '') +
+        '</div>';
+      }).join('');
+
+      const oppGoalsHtml = (m.oppGoals || []).length ? (m.oppGoals || []).map(function(og) {
+        return '<div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800/80 flex justify-between items-center text-xs text-slate-300">' +
+          '<span><strong>' + og.min + ' (Half ' + og.half + ')</strong> — Opponent Goal: ' + og.player + '</span>' +
+        '</div>';
+      }).join('') : '<div class="text-xs text-emerald-400 font-semibold">🧤 Clean Sheet (0 Opponent Goals)</div>';
+
+      const cardsHtml = (m.cards || []).length ? (m.cards || []).map(function(cd) {
+        const pName = cd.team === 'NVFC' && ROSTER[cd.num] ? '#' + ROSTER[cd.num].dispNum + ' ' + ROSTER[cd.num].name : cd.card;
+        return '<div class="p-2 rounded-lg bg-rose-950/40 border border-rose-500/30 flex justify-between items-center text-xs text-rose-200">' +
+          '<span><strong>' + cd.min + '</strong> — ' + pName + '</span>' +
+          '<span class="font-bold text-rose-400">' + cd.card + '</span>' +
+        '</div>';
+      }).join('') : '';
+
+      const startersBadges = (m.starters || []).map(function(sNum) {
+        const p = ROSTER[sNum];
+        if (!p) return '';
+        const isGK = (m.gk === sNum);
+        const isCap = (m.cap === sNum);
+        const dispN = (m.id === 'BCSPL-01' && sNum === 13) ? '21' : p.dispNum;
+        return '<span class="px-2.5 py-1 rounded-lg text-xs font-semibold border bg-slate-900 border-slate-700 text-slate-200">' +
+          '#' + dispN + ' ' + p.name + (isGK ? ' (G)' : '') + (isCap ? ' (C)' : '') +
+        '</span>';
+      }).join('');
+
+      const subsBadges = (m.subs || []).length ? (m.subs || []).map(function(subNum) {
+        const p = ROSTER[subNum];
+        if (!p) return '';
+        return '<span class="px-2.5 py-1 rounded-lg text-xs bg-slate-900/70 border border-slate-800 text-slate-300">' +
+          '#' + p.dispNum + ' ' + p.name +
+        '</span>';
+      }).join('') : '<span class="text-xs text-slate-500">No substitutes listed on Comet sheet</span>';
+
+      return '<div class="inline-drawer space-y-3.5">' +
+        '<div class="flex items-center justify-between">' +
+          '<div>' +
+            '<h4 class="text-xs sm:text-sm font-extrabold text-white">' + m.date + ' (' + m.time + ') — NVFC BCSPL 13G ' + m.gf + ' : ' + m.ga + ' ' + m.opp + '</h4>' +
+            '<p class="text-[11px] text-slate-400">Match #' + m.id + ' • ' + m.venue + ' (' + m.ha + ')</p>' +
+          '</div>' +
+          '<button onclick="toggleGameInline(\'' + m.id + '\')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold cursor-pointer">Close ✕</button>' +
+        '</div>' +
+        '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">' +
+          '<div class="space-y-2">' +
+            '<h5 class="text-[11px] font-bold uppercase text-emerald-400">NVFC BCSPL 13G Scoring & Timeline (' + m.gf + ' GF)</h5>' +
+            '<div class="space-y-1.5">' + goalsHtml + '</div>' +
+            '<h5 class="text-[11px] font-bold uppercase text-slate-400 pt-2">Opponent Goals & Discipline</h5>' +
+            '<div class="space-y-1.5">' + oppGoalsHtml + cardsHtml + '</div>' +
+          '</div>' +
+          '<div class="space-y-3">' +
+            '<div>' +
+              '<h5 class="text-[11px] font-bold uppercase text-emerald-400 mb-1.5">Starting Lineup — Starting XI (' + (m.starters || []).length + ')</h5>' +
+              '<div class="flex flex-wrap gap-1.5">' + startersBadges + '</div>' +
+            '</div>' +
+            '<div>' +
+              '<h5 class="text-[11px] font-bold uppercase text-sky-400 mb-1.5">Substitutes Bench (' + (m.subs || []).length + ')</h5>' +
+              '<div class="flex flex-wrap gap-1.5">' + subsBadges + '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function renderGameLog(matches) {
+      // 1. Mobile Cards (< md)
+      document.getElementById('gameLogMobileCards').innerHTML = matches.map(function(m) {
+        const badgeCls = m.res === 'W' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' :
+                         m.res === 'D' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' :
+                                         'bg-rose-500/20 text-rose-300 border-rose-500/30';
+        const isExpanded = expandedGameId === m.id;
+        const gkObj = ROSTER[m.gk] || { dispNum: String(m.gk), name: 'GK' };
+
+        let card = '<div class="rounded-2xl border transition overflow-hidden ' + (isExpanded ? 'bg-slate-900 border-red-500/70' : 'bg-slate-900/75 border-slate-800') + '">' +
+          '<div onclick="toggleGameInline(\'' + m.id + '\')" class="p-3.5 cursor-pointer">' +
+            '<div class="flex items-center justify-between text-xs text-slate-400 mb-1">' +
+              '<span>' + m.date + ' • ' + m.time + ' (' + m.ha + ')</span>' +
+              '<span class="font-mono text-red-300">' + m.id + '</span>' +
+            '</div>' +
+            '<div class="flex items-center justify-between gap-2">' +
+              '<div class="font-bold text-white text-sm">' + m.opp + '</div>' +
+              '<div class="flex items-center gap-2 shrink-0">' +
+                '<span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold border ' + badgeCls + '">' + m.res + ' ' + m.gf + '–' + m.ga + '</span>' +
+                '<span class="text-slate-400 text-xs">' + (isExpanded ? '▴' : '▾') + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="text-[11px] text-slate-400 mt-1 flex justify-between">' +
+              '<span>Starting GK: ' + gkObj.name + '</span>' +
+              '<span>XI: ' + (m.starters || []).length + ' • Subs: ' + (m.subs || []).length + '</span>' +
+            '</div>' +
+          '</div>';
+
+        if (isExpanded) {
+          card += '<div class="p-3.5 bg-slate-950 border-t border-slate-800">' + buildMatchDetailHtml(m) + '</div>';
+        }
+        card += '</div>';
+        return card;
+      }).join('');
+
+      // 2. Desktop Table (>= md)
+      document.getElementById('gameLogBody').innerHTML = matches.map(function(m) {
+        const badgeCls = m.res === 'W' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' :
+                         m.res === 'D' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' :
+                                         'bg-rose-500/20 text-rose-300 border-rose-500/30';
+        const isExpanded = expandedGameId === m.id;
+        const gkObj = ROSTER[m.gk] || { dispNum: String(m.gk), name: 'GK' };
+        const scorersSummary = (m.goals || []).map(function(g) {
+          return g.sc && ROSTER[g.sc] ? ROSTER[g.sc].name.split(' ')[0] + ' (' + g.min + ')' : 'Team Goal';
+        }).join(', ');
+
+        const mainRow = '<tr onclick="toggleGameInline(\'' + m.id + '\')" class="' + (isExpanded ? 'bg-red-950/40' : 'hover:bg-slate-800/60') + ' cursor-pointer transition">' +
+          '<td class="py-2.5 pr-2 whitespace-nowrap font-medium text-slate-200"><span class="mr-1.5 text-slate-400">' + (isExpanded ? '▾' : '▸') + '</span>' + m.date + ' <span class="text-xs text-slate-400">' + m.time + '</span></td>' +
+          '<td class="py-2.5 px-2 font-mono text-xs text-red-300">' + m.id + '</td>' +
+          '<td class="py-2.5 px-2 font-semibold text-white">' + m.opp + '</td>' +
+          '<td class="py-2.5 px-2 text-center text-xs">' + m.ha + '</td>' +
+          '<td class="py-2.5 px-2 text-center font-bold text-white">' + m.gf + ' – ' + m.ga + '</td>' +
+          '<td class="py-2.5 px-2 text-center"><span class="px-2.5 py-0.5 rounded-full text-xs font-bold border ' + badgeCls + '">' + m.res + '</span></td>' +
+          '<td class="py-2.5 px-2 text-xs text-slate-300">' + gkObj.name + '</td>' +
+          '<td class="py-2.5 pl-2 text-xs text-slate-300">' + scorersSummary + '</td>' +
+        '</tr>';
+
+        if (!isExpanded) return mainRow;
+
+        const detailRow = '<tr class="bg-slate-950/95">' +
+          '<td colspan="8" class="p-4 border-l-4 border-l-red-500">' + buildMatchDetailHtml(m) + '</td>' +
+        '</tr>';
+
+        return mainRow + detailRow;
+      }).join('');
+    }
+
+    function switchTab(tabId) {
+      ['overview', 'leaderboard', 'gamelog'].forEach(function(id) {
+        document.getElementById('tab-' + id).classList.toggle('hidden', id !== tabId);
+        document.getElementById('tabBtn-' + id).className = (id === tabId)
+          ? 'tab-active px-2.5 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer text-center'
+          : 'tab-inactive px-2.5 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer text-center';
+      });
+    }
+
+    function renderAll() {
+      const matches = getFilteredMatches();
+      const stats = computeStats(matches);
+      renderKPIs(stats);
+      renderOverview(matches, stats);
+      renderLeaderboard();
+      renderGameLog(matches);
+    }
+
+    // Render everything from the data in this file
+    document.getElementById('syncBadge').textContent = MATCHES.length + ' Matches Loaded';
+    renderAll();
+  </script>
+</body>
+</html>
